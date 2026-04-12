@@ -1,0 +1,28 @@
+# Python Dependencies for SDD/TDD Development
+# Core testing framework
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-watch>=4.2.0
+
+# Data validation and modeling
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+
+# Code quality and formatting
+black>=23.7.0
+flake8>=6.1.0
+pylint>=2.17.0
+pyright>=1.1.320
+
+# Type hints and validation
+typing-extensions>=4.7.0
+
+# Environment management
+python-dotenv>=1.0.0
+
+# Optional: async testing
+pytest-asyncio>=0.21.0
+
+# Optional: request mocking
+pytest-mock>=3.11.1
+responses>=0.23.0

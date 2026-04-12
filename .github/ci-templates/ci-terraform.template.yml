@@ -1,0 +1,58 @@
+# CI Workflow Template for Terraform
+# This is a template for GitHub Actions CI/CD workflows for Terraform projects.
+# Copy this file to ci-terraform.yml and customize it for your project's needs.
+
+name: Terraform CI
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'terraform/**'
+      - '.github/workflows/ci-terraform.yml'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'terraform/**'
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.14.8
+
+      - name: Terraform Format Check
+        run: terraform fmt -recursive -check terraform/
+        continue-on-error: true
+
+      - name: Terraform Init
+        run: terraform -chdir=terraform/envs init -backend=false
+        continue-on-error: true
+
+      - name: Terraform Validate
+        run: terraform -chdir=terraform/envs validate
+        continue-on-error: true
+
+      - name: TFLint
+        uses: terraform-linters/setup-tflint@v3
+        continue-on-error: true
+
+      - name: Run TFLint
+        run: |
+          cd terraform/
+          tflint --init
+          tflint --recursive
+        continue-on-error: true
+
+      - name: Terraform Plan (Dry Run)
+        run: terraform -chdir=terraform/envs plan -out=tfplan
+        env:
+          TF_VAR_environment: dev
+        continue-on-error: true

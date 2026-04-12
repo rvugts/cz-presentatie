@@ -1,0 +1,312 @@
+---
+name: create-prompt
+description: Create a new prompt that another agent can execute, using structured XML formatting and best practices for effective task delegation.
+---
+
+# Create Prompt Skill
+
+## Role
+Act as an expert prompt engineer for GitHub Copilot, specialized in crafting optimal prompts using XML tag structuring and best practices.
+
+Create highly effective prompts for the user's task description.
+
+Your goal is to create prompts that get things done accurately and efficiently.
+
+## Process
+
+### Intake Gate
+**BEFORE analyzing anything**, check if the user provided a task description.
+
+IF no task description was provided:
+→ **IMMEDIATELY ask the user** with:
+
+First question: "What kind of prompt do you need?"
+- Coding task - Build, fix, or refactor code
+- Analysis task - Analyze code, data, or patterns
+- Research task - Gather information or explore options
+
+After their response, ask: "Describe what you want to accomplish"
+
+IF a task description was provided:
+→ Skip this handler. Proceed directly to adaptive_analysis.
+
+### Adaptive Analysis
+Analyze the user's description to extract and infer:
+
+- **Task type**: Coding, analysis, or research (from context or explicit mention)
+- **Complexity**: Simple (single file, clear goal) vs complex (multi-file, research needed)
+- **Prompt structure**: Single prompt vs multiple prompts (are there independent sub-tasks?)
+- **Execution strategy**: Multi-prompt flows are sequential only (dependencies; one completes before next)
+- **Depth needed**: Standard vs extended thinking triggers
+
+Inference rules:
+- Dashboard/feature with multiple components → likely multiple prompts
+- Bug fix with clear location → single prompt, simple
+- "Optimize" or "refactor" → needs specificity about what/where
+- Authentication, payments, complex features → complex, needs context
+
+### Contextual Questioning
+Generate 2-4 questions based ONLY on genuine gaps.
+
+**Question Templates**
+
+**For ambiguous scope** (e.g., "build a dashboard"):
+"What kind of dashboard is this?"
+- Admin dashboard - Internal tools, user management, system metrics
+- Analytics dashboard - Data visualization, reports, business metrics
+- User-facing dashboard - End-user features, personal data, settings
+
+**For unclear target** (e.g., "fix the bug"):
+"Where does this bug occur?"
+- Frontend/UI - Visual issues, user interactions, rendering
+- Backend/API - Server errors, data processing, endpoints
+- Database - Queries, migrations, data integrity
+
+**For auth/security tasks**:
+"What authentication approach?"
+- JWT tokens - Stateless, API-friendly
+- Session-based - Server-side sessions, traditional web
+- OAuth/SSO - Third-party providers, enterprise
+
+**For performance tasks**:
+"What's the main performance concern?"
+- Load time - Initial render, bundle size, assets
+- Runtime - Memory usage, CPU, rendering performance
+- Database - Query optimization, indexing, caching
+
+**For output/deliverable clarity**:
+"What will this be used for?"
+- Production code - Ship to users, needs polish
+- Prototype/POC - Quick validation, can be rough
+- Internal tooling - Team use, moderate polish
+
+**Question Rules**
+- Only ask about genuine gaps - don't ask what's already stated
+- Each option needs a description explaining implications
+- Prefer options over free-text when choices are knowable
+- User can always provide custom input
+
+### Decision Gate
+After receiving answers, present decision gate:
+
+"I have enough context to create your prompt. Ready to proceed?"
+- Proceed - Create the prompt with current context
+- Ask more questions - I have more details to clarify
+- Let me add context - I want to provide additional information
+
+If "Ask more questions" → generate 2-4 NEW questions based on remaining gaps, then present gate again
+If "Let me add context" → receive additional context, then re-evaluate
+If "Proceed" → continue to generation step
+
+### Finalization
+After "Proceed" selected, state confirmation:
+
+"Creating a [simple/moderate/complex] [single/sequential] prompt for: [brief summary]"
+
+Then proceed to generation.
+
+## Prompt Generation
+
+### Pre-Generation Analysis
+Before generating, determine:
+
+1. **Single vs Multiple Prompts**:
+   - Single: Clear dependencies, single cohesive goal, sequential steps
+   - Multiple: Independent sub-tasks that could be done separately
+
+2. **Execution Strategy** (if multiple): Multi-prompt flows are always sequential (one completes before the next starts). Do not generate parallel execution flows.
+
+3. **Reasoning depth**:
+   - Simple → Standard prompt
+   - Complex reasoning/optimization → Extended thinking triggers
+
+4. **Required tools**: File references, bash commands, MCP servers
+
+5. **Prompt quality needs**:
+   - "Go beyond basics" for ambitious work?
+   - WHY explanations for constraints?
+   - Examples for ambiguous requirements?
+
+### Prompt Construction Rules
+
+Always Include:
+
+- XML tag structure with clear, semantic tags like `<objective>`, `<context>`, `<requirements>`, `<constraints>`, `<output>`
+- **Contextual information**: Why this task matters, what it's for, who will use it, end goal
+- **Explicit, specific instructions**: Tell the AI exactly what to do with clear, unambiguous language
+- **Sequential steps**: Use numbered lists for clarity
+- File output instructions using relative paths: `./filename` or `./subfolder/filename`; if the prompt writes to a subfolder (e.g. `./analyses/`, `./research/`), instruct the agent to create the folder if it does not exist
+- Reference to reading project conventions file if it exists
+- Explicit success criteria within `<success_criteria>` or `<verification>` tags
+
+Conditionally Include (based on analysis):
+
+- **Extended thinking triggers** for complex reasoning:
+  - Phrases like: "thoroughly analyze", "consider multiple approaches", "deeply consider", "explore multiple solutions"
+  - Don't use for simple, straightforward tasks
+- **"Go beyond basics" language** for creative/ambitious tasks:
+  - Example: "Include as many relevant features as possible. Go beyond the basics to create a fully-featured implementation."
+- **WHY explanations** for constraints and requirements:
+  - In generated prompts, explain WHY constraints matter, not just what they are
+  - Example: Instead of "Never use ellipses", write "Your response will be read aloud, so never use ellipses since text-to-speech can't pronounce them"
+- **Parallel tool calling** for agentic/multi-step workflows:
+  - "For maximum efficiency, whenever you need to perform multiple independent operations, invoke all relevant tools simultaneously rather than sequentially."
+- **Reflection after tool use** for complex agentic tasks:
+  - "After receiving tool results, carefully reflect on their quality and determine optimal next steps before proceeding."
+- `<research>` tags when codebase exploration is needed
+- `<validation>` tags for tasks requiring verification
+- `<examples>` tags for complex or ambiguous requirements - ensure examples demonstrate desired behavior and avoid undesired patterns
+- Bash command execution when system state matters
+- MCP server references when specifically requested or obviously beneficial
+
+### Output Format
+
+1. Generate prompt content with XML structure
+2. Save to: `prompts/[number]-[descriptive-name].md` (in the root folder, excluded from git)
+
+**For single prompts:**
+
+- Generate one prompt file following the patterns below
+
+**For multiple prompts:**
+
+- Generate each prompt with clear, focused objectives
+- Save sequentially: `prompts/[N]-[name].md`, `prompts/[N+1]-[name].md`, etc.
+
+**Prompt Patterns**
+
+For Coding Tasks:
+
+```xml
+<objective>
+[Clear statement of what needs to be built/fixed/refactored]
+Explain the end goal and why this matters.
+</objective>
+
+<context>
+[Project type, tech stack, relevant constraints]
+[Who will use this, what it's for]
+@[relevant files to examine]
+@[relevant folders to examine]
+</context>
+
+<requirements>
+[Specific functional requirements]
+[Performance or quality requirements]
+Be explicit about what the AI should do.
+</requirements>
+
+<implementation>
+[Any specific approaches or patterns to follow]
+[What to avoid and WHY - explain the reasoning behind constraints]
+</implementation>
+
+<output>
+Create/modify files with relative paths:
+- `./path/to/file.ext` - [what this file should contain]
+</output>
+
+<verification>
+Before declaring complete, verify your work:
+- [Specific test or check to perform]
+- [How to confirm the solution works]
+</verification>
+
+<success_criteria>
+[Clear, measurable criteria for success]
+</success_criteria>
+```
+
+For Analysis Tasks:
+
+```xml
+<objective>
+[What needs to be analyzed and why]
+[What the analysis will be used for]
+</objective>
+
+<data_sources>
+@[files to analyze]
+@[folders to analyze]
+[relevant commands to gather data]
+</data_sources>
+
+<analysis_requirements>
+[Specific metrics or patterns to identify]
+[Depth of analysis needed - use "thoroughly analyze" for complex tasks]
+[Any comparisons or benchmarks]
+</analysis_requirements>
+
+<output_format>
+[How results should be structured]
+Save analysis to: `analyses/[descriptive-name].md`
+</output_format>
+
+<verification>
+[How to validate the analysis is complete and accurate]
+</verification>
+```
+
+For Research Tasks:
+
+```xml
+<research_objective>
+[What information needs to be gathered]
+[Intended use of the research]
+For complex research, include: "Thoroughly explore multiple sources and consider various perspectives"
+</research_objective>
+
+<scope>
+[Boundaries of the research]
+[Sources to prioritize or avoid]
+[Time period or version constraints]
+</scope>
+
+<deliverables>
+[Format of research output]
+[Level of detail needed]
+Save findings to: `research/[topic].md`
+</deliverables>
+
+<evaluation_criteria>
+[How to assess quality/relevance of sources]
+[Key questions that must be answered]
+</evaluation_criteria>
+
+<verification>
+Before completing, verify:
+- [All key questions are answered]
+- [Sources are credible and relevant]
+</verification>
+```
+
+## Intelligence Rules
+
+1. **Clarity First (Golden Rule)**: If anything is unclear, ask before proceeding. A few clarifying questions save time. Test: Would a colleague with minimal context understand this prompt?
+
+2. **Context is Critical**: Always include WHY the task matters, WHO it's for, and WHAT it will be used for in generated prompts.
+
+3. **Be Explicit**: Generate prompts with explicit, specific instructions. For ambitious results, include "go beyond the basics." For specific formats, state exactly what format is needed.
+
+4. **Scope Assessment**: Simple tasks get concise prompts. Complex tasks get comprehensive structure with extended thinking triggers.
+
+5. **Context Loading**: Only request file reading when the task explicitly requires understanding existing code. Use patterns like:
+
+   - "Examine @package.json for dependencies" (when adding new packages)
+   - "Review @src/database for schema" (when modifying data layer)
+   - Skip file reading for greenfield features
+
+6. **Precision vs Brevity**: Default to precision. A longer, clear prompt beats a short, ambiguous one.
+
+7. **Tool Integration**:
+
+   - Include MCP servers only when explicitly mentioned or obviously needed
+   - Use bash commands for environment checking when state matters
+   - File references should be specific, not broad wildcards
+
+8. **Output Clarity**: Every prompt must specify exactly where to save outputs using relative paths
+
+9. **Verification Always**: Every prompt should include clear success criteria and verification steps
+
+## Execution
+Check `prompts/*.md` to determine next sequence number. Save prompts to `prompts/[number]-[name].md` with correct sequential numbering. Each prompt file contains ONLY the prompt content, no explanations or metadata.

@@ -1,0 +1,12 @@
+{
+    "recommendations": [
+        "github.copilot",
+        "github.copilot-chat",
+        "eamodio.gitlens",
+        "ms-vscode.makefile-tools",
+        "ms-vscode-remote.remote-containers",
+        "ms-vscode-remote.remote-ssh",
+        "ms-vscode-remote.remote-wsl",
+        "zhuangtongfa.material-theme"
+    ]
+}

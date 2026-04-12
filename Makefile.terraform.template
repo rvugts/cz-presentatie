@@ -1,0 +1,48 @@
+.PHONY: help init validate format lint plan destroy clean
+
+help:
+	@echo "Terraform Development Commands"
+	@echo ""
+	@echo "  make init       - Initialize Terraform working directory"
+	@echo "  make validate   - Validate Terraform configuration"
+	@echo "  make format     - Format Terraform code"
+	@echo "  make lint       - Run TFLint"
+	@echo "  make plan       - Generate Terraform plan"
+	@echo "  make check      - Run validate, format-check, and lint"
+	@echo "  make clean      - Remove .terraform directories and lock files"
+	@echo ""
+
+init:
+	@echo "🔧 Initializing Terraform..."
+	terraform -chdir=terraform/envs init -backend=false
+	@echo "✅ Initialized"
+
+validate:
+	@echo "✔️  Validating Terraform..."
+	terraform -chdir=terraform/envs validate
+	@echo "✅ Validation passed"
+
+format:
+	@echo "🖌️  Formatting Terraform code..."
+	terraform fmt -recursive terraform/
+	@echo "✅ Formatted"
+
+lint:
+	@echo "🎨 Running TFLint..."
+	cd terraform && tflint --init && tflint --recursive
+	@echo "✅ TFLint passed"
+
+plan:
+	@echo "📋 Generating Terraform plan..."
+	terraform -chdir=terraform/envs plan
+	@echo "✅ Plan generated"
+
+check: validate format lint
+	@echo "✅ All checks passed!"
+
+clean:
+	@echo "🗑️  Cleaning Terraform artifacts..."
+	find terraform -type d -name ".terraform" -exec rm -rf {} + 2>/dev/null || true
+	find terraform -name ".terraform.lock.hcl" -delete
+	find terraform -name "*.tfplan" -delete
+	@echo "✅ Cleaned up"

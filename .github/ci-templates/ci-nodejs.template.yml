@@ -1,0 +1,47 @@
+# CI Workflow Template for Node.js
+# This is a template for GitHub Actions CI/CD workflows for Node.js projects.
+# Copy this file to ci.yml and customize it for your project's needs.
+
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Check linting
+        run: |
+          if [ -f "package.json" ] && grep -q "eslint" package.json; then npm run lint; fi
+
+      - name: Check formatting
+        run: |
+          if [ -f "package.json" ] && grep -q "prettier" package.json; then npm run format:check; fi
+
+      - name: Build
+        run: |
+          if [ -f "package.json" ] && grep -q "build" package.json; then npm run build; fi

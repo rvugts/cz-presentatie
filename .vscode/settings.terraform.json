@@ -1,0 +1,27 @@
+{
+    // ============================================================================
+    // Terraform Configuration (Added by enable-terraform.sh)
+    // ============================================================================
+    "[terraform]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "hashicorp.terraform",
+        "editor.rulers": [
+            100
+        ]
+    },
+    "[hcl]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "hashicorp.terraform",
+        "editor.rulers": [
+            100
+        ]
+    },
+    // Terraform validation
+    "terraform.validation": {
+        "enabled": true
+    },
+    // Terraform linting
+    "terraform.linting": {
+        "enabled": true
+    }
+}
