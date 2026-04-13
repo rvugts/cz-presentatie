@@ -70,7 +70,9 @@ def _json_default(value: Any) -> Any:
     return str(value)
 
 
-def write_json_report(records: list[dict[str, Any]], output_path: str = DEFAULT_OUTPUT_PATH) -> None:
+def write_json_report(
+    records: list[dict[str, Any]], output_path: str = DEFAULT_OUTPUT_PATH
+) -> None:
     """Write canonical JSON records to DBFS output path."""
     target_path = Path(output_path)
     target_path.parent.mkdir(parents=True, exist_ok=True)

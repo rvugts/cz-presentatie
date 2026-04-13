@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
@@ -10,8 +11,12 @@ from typing import Any
 
 
 def _load_runner_module() -> Any:
-    module_path = Path(__file__).resolve().parents[2] / "scripts" / "run_claims_validation_from_tables.py"
-    module_spec = importlib.util.spec_from_file_location("run_claims_validation_from_tables", module_path)
+    module_path = (
+        Path(__file__).resolve().parents[2] / "scripts" / "run_claims_validation_from_tables.py"
+    )
+    module_spec = importlib.util.spec_from_file_location(
+        "run_claims_validation_from_tables", module_path
+    )
     if module_spec is None or module_spec.loader is None:
         raise RuntimeError("Unable to load runner module specification")
 
@@ -159,3 +164,62 @@ def test_main_returns_one_on_execution_failure(monkeypatch: Any) -> None:
     monkeypatch.setattr(runner, "run_validation_from_tables", _raise_failure)
 
     assert runner.main() == 1
+
+
+def test_run_validation_from_tables_end_to_end_emits_canonical_records_and_writes_sink(
+    monkeypatch: Any,
+    tmp_path: Path,
+) -> None:
+    """Runner should execute full engine flow and persist Section 9 envelope records."""
+    output_path = tmp_path / "validation_report.json"
+    monkeypatch.setattr(runner, "DEFAULT_OUTPUT_PATH", str(output_path))
+
+    spark = _FakeSparkSession(
+        {
+            "workspace.demo.claims": [
+                {
+                    "claim_id": "C-DUP-1",
+                    "patient_id": "PAT-001",
+                    "provider_id": "PRV-001",
+                    "treatment_code": "TREAT-100",
+                    "amount": 10.0,
+                    "claim_date": date(2026, 4, 1),
+                    "submitted_date": date(2026, 4, 2),
+                    "status": "submitted",
+                },
+                {
+                    "claim_id": "C-DUP-1",
+                    "patient_id": "PAT-MISSING",
+                    "provider_id": "PRV-MISSING",
+                    "treatment_code": "TREAT-100",
+                    "amount": -5.0,
+                    "claim_date": date(2026, 4, 3),
+                    "submitted_date": date(2026, 4, 2),
+                    "status": "submitted",
+                },
+            ],
+            "workspace.demo.patients": [{"patient_id": "PAT-001"}],
+            "workspace.demo.providers": [{"provider_id": "PRV-001"}],
+        }
+    )
+
+    records = runner.run_validation_from_tables(spark)
+
+    assert output_path.exists()
+    persisted_records = json.loads(output_path.read_text(encoding="utf-8"))
+    assert records == persisted_records
+
+    emitted_codes = [record["error"]["code"] for record in records]
+    assert emitted_codes == [
+        "VALIDATION_NEGATIVE_AMOUNT",
+        "VALIDATION_INVALID_DATE_ORDER",
+        "NOT_FOUND_PATIENT",
+        "NOT_FOUND_PROVIDER",
+        "CONFLICT_DUPLICATE_CLAIM_ID",
+        "CONFLICT_DUPLICATE_CLAIM_ID",
+    ]
+
+    for record in records:
+        error_payload = record["error"]
+        assert set(error_payload) == {"code", "message", "details", "request_id"}
+        assert isinstance(error_payload["request_id"], str) and error_payload["request_id"]

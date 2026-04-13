@@ -60,8 +60,13 @@ def test_validate_claims_is_registry_driven_and_extensible(monkeypatch: Any) -> 
     def custom_dataset_rule(claims: list[dict[str, Any]]) -> list[dict[str, Any]]:
         return [{"code": "DATASET_CUSTOM", "claim_id": claims[0]["claim_id"]}]
 
-    monkeypatch.setattr("claims_validation.engine.get_row_rules", lambda patient_reference_ids, provider_reference_ids: (custom_row_rule,))
-    monkeypatch.setattr("claims_validation.engine.get_dataset_rules", lambda: (custom_dataset_rule,))
+    monkeypatch.setattr(
+        "claims_validation.engine.get_row_rules",
+        lambda patient_reference_ids, provider_reference_ids: (custom_row_rule,),
+    )
+    monkeypatch.setattr(
+        "claims_validation.engine.get_dataset_rules", lambda: (custom_dataset_rule,)
+    )
 
     violations = validate_claims(
         claims=[{"claim_id": "C-EXT-1"}],
