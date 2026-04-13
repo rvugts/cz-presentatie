@@ -159,7 +159,7 @@ Invoke with `/` in Copilot Chat:
 - `/create-spec` - Generate feature specifications (SDD)
 - `/create-tasks` - Break down a spec into executable tasks
 - `/audit-security` - Security audit of codebase
-- `/create-prompt` - Generate reusable prompts
+- `/generate-prompt` - Generate reusable prompts
 - `/refactor-python` - Refactor Python code
 - `/run-prompt` - Execute saved prompts
 

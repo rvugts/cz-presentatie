@@ -159,7 +159,7 @@ Which section(s) of the spec this task implements (e.g. "Section 3.1 FR-1, Secti
 - None | Task N, Task M
 
 **Prompt hint:**
-One-line suggestion for what to ask Copilot (or pass to `/create-prompt`) when executing this task.
+One-line suggestion for what to ask Copilot (or pass to `/generate-prompt`) when executing this task.
 
 ---
 ```
@@ -234,5 +234,5 @@ Before delivering the task file, verify:
 - [ ] Execution order respects all dependency chains
 - [ ] Test tasks exist for all functional work (TDD)
 - [ ] Setup tasks come first; documentation and refactoring come last
-- [ ] Prompt hints are included to support `/create-prompt` workflow
+- [ ] Prompt hints are included to support `/generate-prompt` workflow
 - [ ] Task count is proportional to spec complexity

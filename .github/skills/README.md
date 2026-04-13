@@ -25,7 +25,7 @@ This directory contains custom agent skills for GitHub Copilot. These skills enh
 - Reads the active spec at `docs/specs/spec.md` and decomposes it into ordered tasks
 - Each task has: category, spec reference, inputs, outputs, acceptance criteria, dependencies
 - TDD-aware sequencing (test tasks paired with implementation tasks)
-- Prompt hints for each task to support the `create-prompt` / `run-prompt` workflow
+- Prompt hints for each task to support the `generate-prompt` / `run-prompt` workflow
 - Complexity scaling: 5–10 tasks for simple specs, up to 50 for complex ones
 - Archives previous `tasks.md` automatically when regenerating
 
@@ -41,7 +41,7 @@ This directory contains custom agent skills for GitHub Copilot. These skills enh
 - Dependency scanning and supply chain security
 - Generates detailed SECURITY_AUDIT_REPORT.md
 
-### create-prompt
+### generate-prompt
 **Description:** Creates a new prompt that another agent can execute, using structured XML formatting and best practices for effective task delegation.
 
 **When to use:** When you need to generate high-quality, structured prompts for complex coding tasks, analysis, or research that will be executed by agents.
@@ -112,7 +112,7 @@ Skills are automatically loaded when Copilot determines the task matches the ski
 - Asking to "break down the spec into tasks" or "create implementation tasks" will invoke `create-tasks`
 - Mentioning "security audit" will likely invoke `audit-security`
 - Requesting Python refactoring will invoke `refactor-python`
-- Asking to create prompts will invoke `create-prompt`
+- Asking to create prompts will invoke `generate-prompt`
 
 ### Explicit Invocation
 You can force skill invocation in several ways:
@@ -130,7 +130,7 @@ Use slash commands in Copilot Chat:
 /create-tasks
 /audit-security
 /refactor-python
-/create-prompt
+/generate-prompt
 /run-prompt
 ```
 

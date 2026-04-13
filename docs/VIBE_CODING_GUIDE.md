@@ -250,7 +250,7 @@ Use the refactor-python skill to improve this code while maintaining functionali
 - Security improvements
 - Performance optimizations
 
-### 5. create-prompt
+### 5. generate-prompt
 **Purpose**: Generate structured prompts for complex tasks
 
 **Best for:**
@@ -261,7 +261,7 @@ Use the refactor-python skill to improve this code while maintaining functionali
 
 **How to invoke:**
 ```
-Use the create-prompt skill to create a multi-step prompt for analyzing our database schema.
+Use the generate-prompt skill to create a multi-step prompt for analyzing our database schema.
 ```
 
 **Features:**
@@ -302,7 +302,7 @@ You can combine skills for powerful workflows:
 3. Write tests to verify fixes
 
 # Example 2: Create → Run → Review
-1. Use create-prompt to design a multi-step workflow
+1. Use generate-prompt to design a multi-step workflow
 2. Use run-prompt to execute the workflow
 3. Review and iterate
 ```
@@ -539,7 +539,7 @@ The repository includes specialized skills for common development tasks:
 - **create-tasks**: Decomposes a spec into ordered, executable tasks at `docs/specs/tasks.md`
 - **audit-security**: Comprehensive security audits with OWASP Top 10 checks
 - **refactor-python**: Python code refactoring and optimization
-- **create-prompt**: Generate structured multi-step prompts
+- **generate-prompt**: Generate structured multi-step prompts
 - **run-prompt**: Execute saved prompts as isolated sub-tasks
 
 See the "Available Copilot Skills" section above for detailed usage.
