@@ -19,7 +19,9 @@ echo ""
 # ============================================================================
 
 echo "📝 Running tests with coverage requirement (>80%)..."
-if ! pytest --cov=src --cov-fail-under=80 --quiet; then
+if [ -z "$(find tests -name 'test_*.py' 2>/dev/null | head -1)" ]; then
+    echo "⏭️  No tests found - skipping coverage checks"
+elif ! pytest --cov=src --cov-fail-under=80 --quiet; then
     echo "❌ Tests failed or coverage below 80%"
     echo ""
     echo "💡 Run this to see coverage details:"

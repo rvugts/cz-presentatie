@@ -1,125 +1,142 @@
-{
   // ============================================================================
   // File Exclusions (Universal - applies to all projects)
   // ============================================================================
-  "files.exclude": {
-    "**/.git": true,
-    "**/.idea": true,
-    "**/.cursor": true,
-    "**/.DS_Store": true,
-    "**/Thumbs.db": true,
-    "**/*.log": true,
-    "**/*.tmp": true,
-    "**/*.bak": true,
-    "**/*.swp": true,
-    "**/*.swo": true,
-    "**/.env": true,
-    "**/.env.local": true,
-    "**/.env.*.local": true,
-    "**/*.pem": true,
-    "**/*.key": true,
-    "**/*.cert": true,
-    "**/*.crseo": true,
-    "**/creds/": true,
-    "**/secrets/": true,
-    "**/node_modules/": true,
-    "**/jspm_packages/": true,
-    "**/bower_components/": true,
-    "**/dist/": true,
-    "**/build/": true,
-    "**/out/": true,
-    "**/.next/": true,
-    "**/.nuxt/": true,
-    "**/.output/": true,
-    "**/.cache/": true,
-    "**/.parcel-cache/": true,
-    "**/package-lock.json": true,
-    "**/yarn.lock": true,
-    "**/pnpm-lock.yaml": true,
-    "**/npm-debug.log*": true,
-    "**/yarn-error.log*": true,
-    "**/yarn-debug.log*": true,
-    "**/pnpm-debug.log*": true,
-    "**/*.min.js": true,
-    "**/*.min.css": true,
-    "**/*.map": true,
-    "**/**/.terraform/": true,
-    "**/*.tfstate": true,
-    "**/*.tfstate.*": true,
-    "**/crash.log": true,
-    "**/crash.*.log": true,
-    "**/*.tfvars": true,
-    "**/*.tfvars.json": true,
-    "**/*.jpg": true,
-    "**/*.jpeg": true,
-    "**/*.png": true,
-    "**/*.gif": true,
-    "**/*.webp": true,
-    "**/*.tiff": true,
-    "**/*.ico": true,
-    "**/*.svg": true,
-    "**/*.psd": true,
-    "**/*.ai": true,
-    "**/*.eps": true,
-    "**/*.mp4": true,
-    "**/*.m4v": true,
-    "**/*.mov": true,
-    "**/*.avi": true,
-    "**/*.mkv": true,
-    "**/*.webm": true,
-    "**/*.mp3": true,
-    "**/*.wav": true,
-    "**/*.flac": true,
-    "**/*.aac": true,
-    "**/*.zip": true,
-    "**/*.tar": true,
-    "**/*.gz": true,
-    "**/*.rar": true,
-    "**/*.7z": true,
-    "**/*.iso": true,
-    "**/*.dmg": true,
-    "**/*.pkg": true,
-    "**/*.pdf": true,
-    "**/*.doc": true,
-    "**/*.docx": true,
-    "**/*.xls": true,
-    "**/*.xlsx": true,
-    "**/*.ppt": true,
-    "**/*.pptx": true,
-    "**/*.csv": true,
-    "**/*.parquet": true,
-    "**/*.avro": true,
-    "**/*.sqlite": true,
-    "**/*.sqlite3": true,
-    "**/*.db": true,
-    "**/*.mdb": true,
-    "**/*.exe": true,
-    "**/*.dll": true,
-    "**/*.dylib": true,
-    "**/*.bin": true
-  },
-
-  // ============================================================================
-  // Editor Configuration (Universal)
-  // ============================================================================
-  "editor.formatOnSave": true,
-  "editor.trimAutoWhitespace": true,
-  "editor.insertSpaces": true,
-  "editor.tabSize": 4,
-  "files.trimTrailingWhitespace": true,
-  "files.insertFinalNewline": true,
-
-  // ============================================================================
-  // Git Configuration (Universal)
-  // ============================================================================
-  "git.ignoreLimitWarning": true,
-
-  // ============================================================================
-  // Copilot Configuration (Universal)
-  // ============================================================================
-  "github.copilot.enable": {
-    "*": true,
-    "plaintext": false,
-    "markdown": true
+  {
+    "files.exclude": {
+      "**/.git": true,
+      "**/.idea": true,
+      "**/.cursor": true,
+      "**/.DS_Store": true,
+      "**/Thumbs.db": true,
+      "***.tmp": true,
+      "***.swp": true,
+      "**.env": true,
+      "**/.env.local": true,
+      "**/.env.*.local": true,
+      "***.key": true,
+      "***.crseo": true,
+      "**/creds/": true,
+      "**/secrets/": true,
+      "**/node_modules/": true,
+      "**/jspm_packages/": true,
+      "**/bower_components/": true,
+      "**/dist/": true,
+      "**/build/": true,
+      "**/out/": true,
+      "**/.next/": true,
+      "**/.nuxt/": true,
+      "**/.output/": true,
+      "**/.cache/": true,
+      "**/.parcel-cache/": true,
+      "**/package-lock.json": true,
+      "**/yarn.lock": true,
+      "**/pnpm-lock.yaml": true,
+      "**/npm-debug.log*": true,
+      "**/yarn-error.log*": true,
+      "**/yarn-debug.log*": true,
+      "**/pnpm-debug.log*": true,
+      "***.min.css": true,
+      "****/.terraform/": true,
+      "***.tfstate.*": true,
+      "**/crash.log": true,
+      "**/crash.*.log": true,
+      "***.tfvars.json": true,
+      "***.jpeg": true,
+      "***.gif": true,
+      "***.tiff": true,
+      "***.svg": true,
+      "***.ai": true,
+      "***.mp4": true,
+      "***.mov": true,
+      "***.mkv": true,
+      "***.mp3": true,
+      "***.flac": true,
+      "***.zip": true,
+      "***.gz": true,
+      "***.7z": true,
+      "***.dmg": true,
+      "***.pdf": true,
+      "***.docx": true,
+      "***.xlsx": true,
+      "***.pptx": true,
+      "***.parquet": true,
+      "***.sqlite": true,
+      "***.db": true,
+      "***.exe": true,
+      "***.dylib": true,
+      "**/*.bin": true
+    },
+    // ============================================================================
+    // Editor Configuration (Universal)
+    // ============================================================================
+    "editor.formatOnSave": true,
+    "editor.trimAutoWhitespace": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    // ============================================================================
+    // Git Configuration (Universal)
+    // ============================================================================
+    "git.ignoreLimitWarning": true,
+    // ============================================================================
+    // Copilot Configuration (Universal)
+    // ============================================================================
+    "github.copilot.enable": {
+      "*": true,
+      "plaintext": false,
+      "markdown": true
+    },
+    "python.defaultInterpreterPath": "${workspaceFolder}/venv/bin/python",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.formatting.provider": "black",
+    "[python]": {
+      "editor.formatOnSave": true,
+      "editor.defaultFormatter": "ms-python.black-formatter",
+      "editor.formatOnPaste": false,
+      "editor.rulers": [
+        100
+      ],
+      "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+      }
+    },
+    "python.analysis.typeCheckingMode": "strict",
+    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.inlayHints.variableTypes": true,
+    "python.testing.pytestEnabled": true,
+    "python.testing.pytestArgs": [
+      "tests",
+      "--maxfail=1",
+      "-v"
+    ],
+    "jupyter.interactiveWindow.cellMarker.codeRegex": "^# COMMAND ----------|^# Databricks notebook source|^(#\\s*%%|#\\s*\\<codecell\\>|#\\s*In\\[\\d*?\\]|#\\s*In\\[ \\])",
+    "jupyter.interactiveWindow.cellMarker.default": "# COMMAND ----------",
+    "makefile.configureOnOpen": false,
+    // ============================================================================
+    // Databricks MCP Server (connect GitHub Copilot to the workspace)
+    // ============================================================================
+    "mcp": {
+      "servers": {
+        "databricks": {
+          "type": "stdio",
+          "command": "${workspaceFolder}/venv/bin/python",
+          "args": [
+            "${workspaceFolder}/scripts/databricks_mcp_server.py"
+          ],
+          "env": {
+            "DATABRICKS_HOST": "https://dbc-a070d6b0-c1c0.cloud.databricks.com"
+          }
+        }
+      }
+    },
+    "chat.tools.terminal.autoApprove": {
+      "/^source venv/bin/activate && python - <<'PY'\nimport asyncio\nfrom mcp import ClientSession, StdioServerParameters\nfrom mcp\\.client\\.stdio import stdio_client\n\nserver = StdioServerParameters\\(\n    command=\"\\./venv/bin/python\",\n    args=\\[\"\\./scripts/databricks_mcp_server\\.py\"\\],\n    env=\\{\"DATABRICKS_HOST\": \"https://dbc-a070d6b0-c1c0\\.cloud\\.databricks\\.com\"\\},\n\\)\n\n\ndef parse_bulleted\\(text: str\\):\n    out = \\[\\]\n    for line in text\\.splitlines\\(\\):\n        line = line\\.strip\\(\\)\n        if line\\.startswith\\(\"- \"\\):\n            out\\.append\\(line\\[2:\\]\\.split\\(\"  #\", 1\\)\\[0\\]\\.strip\\(\\)\\)\n    return \\[x for x in out if x\\]\n\n\nasync def main\\(\\):\n    async with stdio_client\\(server\\) as \\(read, write\\):\n        async with ClientSession\\(read, write\\) as session:\n            await session\\.initialize\\(\\)\n\n            catalogs_res = await session\\.call_tool\\(\"list_catalogs\", \\{\\}\\)\n            catalogs_text = \"\\\\n\"\\.join\\(\n                c\\.text for c in catalogs_res\\.content if hasattr\\(c, \"text\"\\)\n            \\)\n            catalogs = sorted\\(parse_bulleted\\(catalogs_text\\)\\)\n\n            total = 0\n            for catalog in catalogs:\n                schemas_res = await session\\.call_tool\\(\n                    \"list_schemas\", \\{\"catalog_name\": catalog\\}\n                \\)\n                schemas_text = \"\\\\n\"\\.join\\(\n                    c\\.text for c in schemas_res\\.content if hasattr\\(c, \"text\"\\)\n                \\)\n                schemas = sorted\\(parse_bulleted\\(schemas_text\\)\\)\n                total \\+= len\\(schemas\\)\n\n                print\\(f\"\\[\\{catalog\\}\\] \\(\\{len\\(schemas\\)\\}\\)\"\\)\n                for s in schemas:\n                    print\\(f\"- \\{s\\}\"\\)\n                print\\(\\)\n\n            print\\(f\"TOTAL_SCHEMAS\\\\t\\{total\\}\"\\)\n\nasyncio\\.run\\(main\\(\\)\\)\nPY$/": {
+        "approve": true,
+        "matchCommandLine": true
+      }
+    }
   }
-}

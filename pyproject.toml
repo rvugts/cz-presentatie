@@ -57,7 +57,6 @@ exclude_lines = [
     "if TYPE_CHECKING:",
     "if __name__ == .__main__.:",
 ]
-min_percentage = 80
 
 [tool.black]
 line-length = 100

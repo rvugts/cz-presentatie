@@ -128,3 +128,5 @@ override.tf.json
 mcp-servers/*/config.json
 !mcp-servers/*/config-examples/*
 
+
+.databricks
