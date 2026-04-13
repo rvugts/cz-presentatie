@@ -35,6 +35,7 @@ dev = [
 minversion = "7.0"
 testpaths = ["tests"]
 python_files = "test_*.py"
+pythonpath = ["src"]
 addopts = "-v --strict-markers --tb=short"
 markers = [
     "slow: marks tests as slow",
