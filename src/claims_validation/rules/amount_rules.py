@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Mapping
 
+from claims_validation.reporting import build_error_record
 from claims_validation.types import VALIDATION_NEGATIVE_AMOUNT, Violation
 
 
@@ -12,9 +13,13 @@ def validate_amount_positive(claim: Mapping[str, Any]) -> list[Violation]:
     amount = claim.get("amount")
     if isinstance(amount, int | float) and amount < 0:
         return [
-            {
-                "code": VALIDATION_NEGATIVE_AMOUNT,
-                "claim_id": claim.get("claim_id"),
-            }
+            build_error_record(
+                code=VALIDATION_NEGATIVE_AMOUNT,
+                details={
+                    "claim_id": claim.get("claim_id"),
+                    "field": "amount",
+                    "value": amount,
+                },
+            )
         ]
     return []

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Callable, Mapping
 
+from claims_validation.reporting import build_error_record
 from claims_validation.types import NOT_FOUND_PATIENT, NOT_FOUND_PROVIDER, Violation
 
 
@@ -15,10 +16,14 @@ def validate_patient_reference_exists(
     patient_id = claim.get("patient_id")
     if patient_id not in patient_reference_ids:
         return [
-            {
-                "code": NOT_FOUND_PATIENT,
-                "claim_id": claim.get("claim_id"),
-            }
+            build_error_record(
+                code=NOT_FOUND_PATIENT,
+                details={
+                    "claim_id": claim.get("claim_id"),
+                    "field": "patient_id",
+                    "value": patient_id,
+                },
+            )
         ]
     return []
 
@@ -31,10 +36,14 @@ def validate_provider_reference_exists(
     provider_id = claim.get("provider_id")
     if provider_id not in provider_reference_ids:
         return [
-            {
-                "code": NOT_FOUND_PROVIDER,
-                "claim_id": claim.get("claim_id"),
-            }
+            build_error_record(
+                code=NOT_FOUND_PROVIDER,
+                details={
+                    "claim_id": claim.get("claim_id"),
+                    "field": "provider_id",
+                    "value": provider_id,
+                },
+            )
         ]
     return []
 
