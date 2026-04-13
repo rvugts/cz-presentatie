@@ -3,6 +3,10 @@ name: run-prompt
 description: Delegate one or more prompts to fresh sub-task contexts with parallel or sequential execution. Use when executing saved prompts from the prompts directory.
 ---
 
+> **Before executing**, gather context:
+> - Git status: `git status --short`
+> - Recent prompts: `ls -t ./prompts/*.md | head -5`
+
 # Run Prompt Skill
 
 ## Objective

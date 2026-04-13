@@ -1,3 +1,24 @@
+#### demo.providers
+
+| Column        | Type   | Description |
+|---------------|--------|-------------|
+| provider_id   | string | Unique provider identifier |
+| provider_type | string | Provider type/category |
+
+#### demo.claims
+
+| Column          | Type   | Description |
+|-----------------|--------|-------------|
+| claim_id        | string | Unique claim identifier |
+| patient_id      | string | Foreign key to patient |
+| provider_id     | string | Foreign key to provider |
+| treatment_code  | string | Procedure or treatment code |
+| amount          | double | Claimed amount |
+| claim_date      | date   | Date of service |
+| submitted_date  | date   | Submission date |
+| status          | string | Claim lifecycle status |
+
+*See Databricks Catalog Explorer for authoritative schema and sample data.*
 # Specification: Claims Data Quality Validator
 
 ---
@@ -5,6 +26,9 @@
 ## 1. Project Overview
 
 This project aims to build a **data quality validation system** for healthcare insurance claims.
+
+The system is intended to validate enterprise data already stored in Databricks schemas,
+including existing tables such as `demo.claims`, `demo.patients`, and `demo.providers`.
 
 The system validates incoming claims data against:
 - Structural rules
@@ -25,10 +49,7 @@ This system is designed for use in a **data platform environment (Azure / Databr
 - Detect anomalies and potential fraud patterns early
 
 ### Technical Goals
-- Provide reusable validation logic
-- Enable automated validation pipelines
-- Support both Python and SQL-based validation
-- Integrate with existing data platform (Databricks)
+Provide a Python script (`scripts/run_claims_validation_from_tables.py`) that reads claims and patient data directly from hardcoded Databricks tables (e.g., `workspace.demo.claims`, `workspace.demo.patients`) using Spark, and runs the validation logic in memory. The script must not require file-based input.
 
 ---
 
@@ -49,21 +70,18 @@ This system is designed for use in a **data platform environment (Azure / Databr
 ## 4. Scope
 
 ### In Scope
-- Validation of claims dataset
-- Detection of:
   - Duplicate claims
   - Invalid amounts
   - Invalid dates
   - Referential integrity issues
   - Business rule violations
-- Python-based validator (for demo and logic)
-- SQL validation queries (for BI usage)
 
 ### Out of Scope (Non-Goals)
 - Real-time streaming validation
 - Full fraud detection system
 - UI/dashboard development
 - Payment processing
+- Re-designing or replacing existing enterprise Databricks schemas
 
 ---
 
@@ -120,6 +138,20 @@ The system must:
 
 ---
 
+### Databricks Table Schemas
+
+#### demo.patients
+
+| Column          | Type   | Description |
+|-----------------|--------|-------------|
+| patient_id      | string | Unique patient identifier |
+| birth_date      | date   | Patient birth date |
+| insurance_type  | string | Insurance policy classification |
+
+*See Databricks Catalog Explorer for authoritative schema and sample data.*
+
+---
+
 ## 8. Technical Architecture
 
 ### Components
@@ -135,7 +167,9 @@ The system must:
 
 ### Interaction
 
-- Data loaded from Databricks tables
+- Data loaded from existing Databricks tables and schemas
+- Primary enterprise integration target includes schema tables such as `demo.claims` and
+   `demo.patients`
 - Validation rules applied
 - Output stored or returned as error report
 
@@ -146,6 +180,55 @@ The system must:
 - Runs in Azure Databricks environment
 - Python validation runs as notebook or job
 - SQL checks executed in Databricks SQL or dbt
+
+spark = SparkSession.builder.getOrCreate()
+### Databricks Execution & Usage
+
+The validator must be runnable as a Python script (`scripts/run_claims_validation_from_tables.py`) in the Databricks environment, with all table and schema names hardcoded for the workspace `https://dbc-a070d6b0-c1c0.cloud.databricks.com` and schema `demo`.
+
+**Execution contract:**
+- The script reads claims from `workspace.demo.claims` and patients from `workspace.demo.patients` using Spark DataFrame APIs.
+- No file-based input is required or supported for the main validation flow.
+- The script runs the validation logic in memory and writes the output (validation errors) to a new or existing Databricks table (e.g., `workspace.demo.validation_report`) or to DBFS as a JSON file.
+
+**Example usage:**
+
+```python
+from pyspark.sql import SparkSession
+from claims_validation.engine import ValidationEngine
+from claims_validation.reporting import build_error_report
+from claims_validation.rules.registry import default_registry
+
+spark = SparkSession.builder.getOrCreate()
+claims_df = spark.table("workspace.demo.claims")
+patients_df = spark.table("workspace.demo.patients")
+claims = [row.asDict(recursive=True) for row in claims_df.collect()]
+patient_ids = {str(row["patient_id"]) for row in patients_df.select("patient_id").collect()}
+
+engine = ValidationEngine(
+    row_rules=default_registry().row_rules(),
+    dataset_rules=default_registry().dataset_rules(),
+)
+errors = engine.validate_claims(claims, patient_ids)
+report = build_error_report(errors)
+
+# Write to Databricks table or DBFS
+report_df = spark.createDataFrame(report)
+report_df.write.mode("overwrite").saveAsTable("workspace.demo.validation_report")
+# or
+# with open("/dbfs/tmp/validation_report.json", "w") as f:
+#     import json; json.dump(report, f, indent=2)
+```
+
+**How to run:**
+1. Submit the script as a Databricks job or run in a Databricks notebook cell.
+2. Ensure the cluster has access to the `demo` schema and required Python dependencies.
+3. Output will be available in the specified Databricks table or DBFS path.
+
+**Dependencies and setup:**
+- `databricks.yml` defines workspace and target metadata.
+- Use the Databricks VS Code extension/workflow for workspace authentication and development.
+- All table/schema/workspace names are hardcoded for demo/enterprise reproducibility.
 
 ---
 

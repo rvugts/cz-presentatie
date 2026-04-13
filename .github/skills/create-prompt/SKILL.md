@@ -3,6 +3,10 @@ name: create-prompt
 description: Create a new prompt that another agent can execute, using structured XML formatting and best practices for effective task delegation.
 ---
 
+> **Before generating prompts**, check `prompts/*.md` (excluding `prompts/completed/`) to:
+> 1. Determine if the prompts directory exists
+> 2. Find the highest numbered prompt to determine next sequence number
+
 # Create Prompt Skill
 
 ## Role
@@ -85,6 +89,7 @@ Generate 2-4 questions based ONLY on genuine gaps.
 - Each option needs a description explaining implications
 - Prefer options over free-text when choices are knowable
 - User can always provide custom input
+- 2-4 questions max per round
 
 ### Decision Gate
 After receiving answers, present decision gate:
@@ -162,7 +167,11 @@ Conditionally Include (based on analysis):
 ### Output Format
 
 1. Generate prompt content with XML structure
-2. Save to: `prompts/[number]-[descriptive-name].md` (in the root folder, excluded from git)
+2. Save to: `prompts/[number]-[descriptive-name].md`
+   - Number format: 001, 002, 003, etc. (check existing files in `prompts/`, excluding `prompts/completed/`)
+   - Name format: lowercase, hyphen-separated, max 5 words describing the task
+   - Example: `prompts/001-implement-user-authentication.md`
+3. File should contain ONLY the prompt, no explanations or metadata
 
 **For single prompts:**
 
@@ -172,6 +181,7 @@ Conditionally Include (based on analysis):
 
 - Generate each prompt with clear, focused objectives
 - Save sequentially: `prompts/[N]-[name].md`, `prompts/[N+1]-[name].md`, etc.
+- Each prompt should be self-contained and executable independently
 
 **Prompt Patterns**
 
@@ -308,5 +318,80 @@ Before completing, verify:
 
 9. **Verification Always**: Every prompt should include clear success criteria and verification steps
 
-## Execution
-Check `prompts/*.md` to determine next sequence number. Save prompts to `prompts/[number]-[name].md` with correct sequential numbering. Each prompt file contains ONLY the prompt content, no explanations or metadata.
+## After Saving: Decision Tree
+
+Present the following to the user after saving the prompt(s):
+
+---
+
+**Prompt(s) created successfully!**
+
+**If you created ONE prompt** (e.g., `prompts/005-implement-feature.md`):
+
+```
+✓ Saved prompt to prompts/005-implement-feature.md
+
+What's next?
+
+1. Run prompt now
+2. Review/edit prompt first
+3. Save for later
+4. Other
+
+Choose (1-4): _
+```
+
+- If user chooses #1, invoke the `run-prompt` skill with prompt `005`
+- If user chooses #2, open the prompt file in the editor for review
+- If user chooses #4 (Other), ask what they would like to do next
+
+**If you created MULTIPLE prompts** (e.g., sequential dependencies):
+
+```
+✓ Saved prompts:
+  - prompts/005-setup-database.md
+  - prompts/006-create-migrations.md
+  - prompts/007-seed-data.md
+
+Execution strategy: These prompts must run SEQUENTIALLY (005 → 006 → 007)
+
+What's next?
+
+1. Run prompts sequentially now (one completes before next starts)
+2. Run first prompt only (005-setup-database.md)
+3. Review/edit prompts first
+4. Other
+
+Choose (1-4): _
+```
+
+- If user chooses #1, invoke the `run-prompt` skill with prompts `005 006 007`
+- If user chooses #2, invoke the `run-prompt` skill with prompt `005`
+- If user chooses #3, open each prompt file in the editor for review
+- If user chooses #4 (Other), ask what they would like to do next
+
+---
+
+## Success Criteria
+
+- Intake gate completed (asked for clarification if needed)
+- User selected "Proceed" from decision gate
+- Appropriate depth, structure, and execution strategy determined
+- Prompt(s) generated with proper XML structure following patterns
+- Files saved to `prompts/[number]-[name].md` with correct sequential numbering
+- Decision tree presented to user based on single/sequential scenario
+- User choice executed (files opened or run-prompt invoked as requested)
+
+## Meta Instructions
+
+- **Intake first**: Complete the intake gate before generating. Ask for structured clarification.
+- **Decision gate loop**: Keep asking questions until user selects "Proceed"
+- Check `prompts/*.md` (excluding `prompts/completed/`) to find existing prompts and determine the next number in sequence
+- If `prompts/` doesn't exist, create the first prompt (parent directories will be created automatically)
+- Keep prompt filenames descriptive but concise
+- Adapt the XML structure to fit the task — not every tag is needed every time
+- Consider the user's working directory as the root for all relative paths
+- Each prompt file should contain ONLY the prompt content, no preamble or explanation
+- After saving, present the decision tree as inline text
+- For file references in prompts, use relative paths (e.g. `src/module/file.py`) or `#file:path` syntax
+- When user chooses to run prompts, invoke the `run-prompt` skill with the appropriate prompt numbers
