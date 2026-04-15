@@ -1,0 +1,11 @@
+/generate-prompt review the spec and compare it with @file:spec.template.md and tell me if the spec is complete enough. Interview me to refine the spec
+
+/create-tasks
+
+/refactor-python
+
+/audit-security
+
+/audit-security -> differebt agent
+
+Create a document on how to execute the code against the databricks tables

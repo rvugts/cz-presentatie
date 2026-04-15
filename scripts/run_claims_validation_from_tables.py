@@ -26,7 +26,19 @@ def create_spark_session() -> Any:
     """Create a Spark session in Databricks or any Spark-enabled runtime."""
     from pyspark.sql import SparkSession  # Imported lazily for local testability.
 
-    return SparkSession.builder.getOrCreate()
+    try:
+        return SparkSession.builder.getOrCreate()
+    except Exception as exc:  # noqa: BLE001 - runtime-specific Spark startup failures vary
+        message = str(exc)
+        if "INVALID_CONNECT_URL" in message:
+            raise RuntimeError(
+                "Spark session initialization failed. In Databricks notebooks, do not run this "
+                "script from a %sh shell cell because that starts a separate process without the "
+                "notebook Spark session. Run it from a Python notebook cell instead, for example: "
+                "import sys; sys.path.insert(0, '<bundle>/src'); from scripts.run_claims_validation_from_tables "
+                "import run_validation_from_tables; records = run_validation_from_tables(spark)"
+            ) from exc
+        raise
 
 
 def _read_table_records(spark: Any, table_name: str) -> list[dict[str, Any]]:
@@ -80,15 +92,23 @@ def write_json_report(
         json.dump(records, report_file, ensure_ascii=False, indent=2, default=_json_default)
 
 
-def run_validation_from_tables(spark: Any) -> list[dict[str, Any]]:
-    """Load hardcoded source tables, run validation, and persist canonical JSON output."""
+def run_validation_from_tables(
+    spark: Any,
+    output_path: str | None = DEFAULT_OUTPUT_PATH,
+) -> list[dict[str, Any]]:
+    """Load hardcoded source tables, run validation, and optionally persist JSON output.
+
+    Pass ``output_path=None`` when running in environments where returning the records is enough
+    and writing to ``/dbfs`` is undesirable or unsupported.
+    """
     claims = _read_table_records(spark, CLAIMS_TABLE)
     patient_ids = _read_reference_ids(spark, PATIENTS_TABLE, PATIENT_ID_COLUMN)
     provider_ids = _read_reference_ids(spark, PROVIDERS_TABLE, PROVIDER_ID_COLUMN)
 
     violations = validate_claims(claims=claims, patient_ids=patient_ids, provider_ids=provider_ids)
     records = to_canonical_json_records(violations)
-    write_json_report(records, DEFAULT_OUTPUT_PATH)
+    if output_path is not None:
+        write_json_report(records, output_path)
     return records
 
 

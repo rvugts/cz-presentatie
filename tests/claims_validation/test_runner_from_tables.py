@@ -121,6 +121,48 @@ def test_run_validation_from_tables_loads_hardcoded_sources_and_writes_dbfs_json
     ]
 
 
+def test_run_validation_from_tables_can_skip_output_write(monkeypatch: Any) -> None:
+    """Notebook callers should be able to skip DBFS writes and just receive records."""
+    spark = _FakeSparkSession(
+        {
+            "workspace.demo.claims": [{"claim_id": "C-1"}],
+            "workspace.demo.patients": [{"patient_id": "PAT-1"}],
+            "workspace.demo.providers": [{"provider_id": "PRV-1"}],
+        }
+    )
+
+    monkeypatch.setattr(
+        runner,
+        "validate_claims",
+        lambda claims, patient_ids, provider_ids: [
+            {
+                "code": "VALIDATION_NEGATIVE_AMOUNT",
+                "message": "Claim amount must be non-negative.",
+                "details": {"claim_id": "C-1", "field": "amount", "value": -1.0},
+                "request_id": "req-1",
+            }
+        ],
+    )
+
+    def _unexpected_write(_: list[dict[str, Any]], __: str) -> None:
+        raise AssertionError("write_json_report should not be called when output_path=None")
+
+    monkeypatch.setattr(runner, "write_json_report", _unexpected_write)
+
+    records = runner.run_validation_from_tables(spark, output_path=None)
+
+    assert records == [
+        {
+            "error": {
+                "code": "VALIDATION_NEGATIVE_AMOUNT",
+                "message": "Claim amount must be non-negative.",
+                "details": {"claim_id": "C-1", "field": "amount", "value": -1.0},
+                "request_id": "req-1",
+            }
+        }
+    ]
+
+
 def test_write_json_report_serializes_supported_values(tmp_path: Path) -> None:
     """JSON writer should safely serialize dates and decimals without throwing."""
     output_path = tmp_path / "validation_report.json"
@@ -172,7 +214,6 @@ def test_run_validation_from_tables_end_to_end_emits_canonical_records_and_write
 ) -> None:
     """Runner should execute full engine flow and persist Section 9 envelope records."""
     output_path = tmp_path / "validation_report.json"
-    monkeypatch.setattr(runner, "DEFAULT_OUTPUT_PATH", str(output_path))
 
     spark = _FakeSparkSession(
         {
@@ -203,7 +244,7 @@ def test_run_validation_from_tables_end_to_end_emits_canonical_records_and_write
         }
     )
 
-    records = runner.run_validation_from_tables(spark)
+    records = runner.run_validation_from_tables(spark, output_path=str(output_path))
 
     assert output_path.exists()
     persisted_records = json.loads(output_path.read_text(encoding="utf-8"))
